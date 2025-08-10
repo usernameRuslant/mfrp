@@ -11,6 +11,15 @@ import '../index.css';
 import Accordeon from './Accordeon/Accordeon';
 import { type AccordionItem } from './types/accordion';
 
+import OrderForm from './Form/Form';
+
+import SearchForm from './SearchForm/SearchForm';
+import ArticleList from './ArticleList';
+import type { Article } from './types/article';
+
+import { ClipLoader } from 'react-spinners';
+import { fetchArticles } from './services/articleService';
+
 const accordionItems: AccordionItem[] = [
   { title: 'section 1', content: 'content of section 1' },
   { title: 'section 2', content: 'content of section 2' },
@@ -35,6 +44,12 @@ export default function App() {
     c: 0,
   });
 
+  const [articles, setArticles] = useState<Article[]>([]);
+  // 1. Додаємо стан індикатора завантаження
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  ///////////////////////////////////////////////////////////
+
   const handleClick = () => {
     setClicks(clicks + 1);
   };
@@ -48,9 +63,35 @@ export default function App() {
   const onUpdateValues = (key: keyof Values) => {
     setValues({ ...values, [key]: values[key] + 1 });
   };
+  ///////////////////////////////////////////////////////////
+  const handleOrder = (data: string) => {
+    console.log('Order received from:', data);
+  };
+  // можна зберегти замовлення, викликати API, показати повідомлення тощо
+  const handleSerch = async (topic: string) => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const data = await fetchArticles(topic);
+      setArticles(data);
+    } catch {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  ///////////////////////////////////////////////////////////
 
+  /////////////////////////////////////////////////////
   return (
     <>
+      <hr />
+      <SearchForm onSubmit={handleSerch} />
+      {isLoading && <ClipLoader color="#e15b64" size={80} />}
+      {isError && <p>Whoops, something went wrong! Please try again!</p>}
+      {articles.length > 0 && <ArticleList items={articles} />}
+      <hr />
+      <OrderForm onSubmit={handleOrder} />
       <hr />
       <Accordeon items={accordionItems} />
       <hr />
@@ -77,9 +118,7 @@ export default function App() {
       <Button value={clicks} onUpdate={handleClick} />
       <Button value={clicks} onUpdate={handleClick} />
 
-      <>
-        <Mailbox username="alise" messages={[]} />
-      </>
+      <Mailbox username="alise" messages={[]} />
     </>
   );
 }
