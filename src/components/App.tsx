@@ -17,7 +17,8 @@ import SearchForm from './SearchForm/SearchForm';
 import ArticleList from './ArticleList';
 import type { Article } from './types/article';
 
-import { ClipLoader } from 'react-spinners';
+// import { ClipLoader } from 'react-spinners';
+import { Audio } from 'react-loader-spinner';
 import { fetchArticles } from './services/articleService';
 
 const accordionItems: AccordionItem[] = [
@@ -87,7 +88,19 @@ export default function App() {
     <>
       <hr />
       <SearchForm onSubmit={handleSerch} />
-      {isLoading && <ClipLoader color="#e15b64" size={80} />}
+      {/* {isLoading && <ClipLoader color="#e15b64" size={80} />} */}
+
+      <Audio
+        height="80"
+        width="80"
+        // radius="9"
+        color="green"
+        ariaLabel="three-dots-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+        visible={isLoading}
+      />
+
       {isError && <p>Whoops, something went wrong! Please try again!</p>}
       {articles.length > 0 && <ArticleList items={articles} />}
       <hr />
